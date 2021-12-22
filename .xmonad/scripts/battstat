@@ -1,1 +1,23 @@
-/home/djtro/.xmonad/scripts/battstat
+#!/bin/bash
+# returns the battery status with formatting.
+
+BATT=`cat /sys/class/power_supply/BAT0/capacity`
+STATUS=`cat /sys/class/power_supply/BAT0/status`
+
+DIR=`dirname "$0"`
+
+[[ $BATT -le 20  ]] && OUTPUT="<fc=#FF0000>$BATT</fc>" ||
+OUTPUT=$BATT
+
+[[ $STATUS != "Discharging" ]] && OUTPUT="<fc=#00FF00>$BATT</fc>"
+
+echo "Batt: $OUTPUT%"
+
+# sends battery warning at 20%
+touch $DIR/lowbatt
+
+LOWBATT=`cat $DIR/lowbatt`
+
+[[ $BATT -le 20 ]] && [[ $LOWBATT != "1" ]] && [[ $STATUS != "Charging" ]] && notify-send "Low Battery" "Your battery is low. You may want to plug in your PC." -u critical -a System -c device -i battery && echo "1" > $DIR/lowbatt && mpv /usr/share/sounds/freedesktop/stereo/dialog-warning.oga || true
+
+[[ $BATT -gt 20 ]] && [[ $LOWBATT != "0" ]] && echo "0" > $DIR/lowbatt || true

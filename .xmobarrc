@@ -1,1 +1,35 @@
-/home/djtro/.xmobarrc
+-- The iconRoot and battstat paths need to be updated to reflect your own system
+
+Config { font = "-misc-fixed-medium-*-*-*-10-*-*-*-*-*-*-*"
+       , additionalFonts = []
+       , bgColor = "#202225"
+       , fgColor = "#FFFFFF"
+       , alpha = 255
+       , position = TopSize C 100 24
+       , textOffset = -1
+       , iconOffset = -1
+
+       , lowerOnStart = True
+       , pickBroadest = False
+       , persistent = True
+       , hideOnStart = False
+       , iconRoot = "/home/djtro/.xmonad/xpm/" --default "."
+       , allDesktops = True
+       , overrideRedirect = True
+
+       , commands = [Run Cpu ["-t","CPU: <total>%",
+			      "-L","3","-H","50",
+                              "--normal","green","--high","red"] 10
+                    , Run Memory ["-t","Mem: <usedratio>%"] 10
+                    , Run Com "uname" ["-s","-r"] "" 36000
+                    , Run Date "%H:%M:%S | %d/%m/%Y" "date" 10
+		    , Run Battery ["-t","Batt: <left>%",
+			           "-L","20","-H","80",
+			           "--low","red","--high","green"] 300
+		    , Run Com "/home/djtro/.xmonad/scripts/battstat" [] "battery" 20
+                    ]
+       , sepChar = "%"
+       , alignSep = "}{"
+       , template = "<icon=ArchLinux_20.xpm/> %cpu% | %memory% | %battery%}\
+                    \{ <fc=#ee9a00>%date%</fc> | %uname%"
+       }
